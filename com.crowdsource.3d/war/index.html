@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<!-- The HTML 4.01 Transitional DOCTYPE declaration-->
+<!-- above set at the top of the file will set     -->
+<!-- the browser's rendering engine into           -->
+<!-- "Quirks Mode". Replacing this declaration     -->
+<!-- with a "Standards Mode" doctype is supported, -->
+<!-- but may lead to some differences in layout.   -->
+
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+<title>Crowd source 3d</title>
+<link rel="stylesheet"
+	href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" />
+<link rel="stylesheet" href="stylesheets/photohunt.css" />
+<link rel="stylesheet" href="stylesheets/gh-buttons.css" />
+<script src="js/app.js"></script>
+<script src="js/services.js"></script>
+<script src="js/controllers.js"></script>
+<script src="js/filters.js"></script>
+<script src="js/directives.js"></script>
+<script type="text/javascript">
+	(function() {
+		var po = document.createElement('script');
+		po.type = 'text/javascript';
+		po.async = true;
+		po.src = 'https://apis.google.com/js/client:plusone.js';
+		var s = document.getElementsByTagName('script')[0];
+		s.parentNode.insertBefore(po, s);
+	})();
+
+	function signinCallback(authResult) {
+		if (authResult['status']['signed_in']) {
+			// Update the app to reflect a signed in user
+			// Hide the sign-in button now that the user is authorized, for example:
+			document.getElementById('signin').setAttribute('style',
+					'display: none');
+		} else {
+			// Update the app to reflect a signed out user
+			// Possible error values:
+			//   "user_signed_out" - User is signed-out
+			//   "access_denied" - User denied access to your app
+			//   "immediate_failed" - Could not automatically log in the user
+			console.log('Sign-in state: ' + authResult['error']);
+		}
+	}
+</script>
+</head>
+
+
+<body>
+	<div id="container">
+		<header>
+		<div id="topHeader">
+			<h1>3D content repository</h1>
+			<div id="profileInfo">
+
+				<span id="signin"> <span class="g-signin"
+					data-callback="signinCallback"
+					data-clientid="599466686196-0q47rt4uh7411oe3pf3gf369ftumt6uq.apps.googleusercontent.com"
+					data-cookiepolicy="single_host_origin"
+					data-requestvisibleactions="http://schema.org/AddAction"
+					data-scope="https://www.googleapis.com/auth/plus.login"> </span>
+				</span> <span ng-show="userProfile">
+<!-- <a target="_blank" href="{{userProfile.googlePublicProfileUrl}}"> <span
+						class="name">{{userProfile.googleDisplayName}}</span> <img
+						ng-src="{{userProfile.googlePublicProfilePhotoUrl|profilePicture:32}}" />
+				</a> -->
+					<button class="button danger disconnect" ng-click="disconnect()"
+						style="">Log Out</button>
+				</span>
+			</div>
+
+			<!-- 		<div id="profileInfo">
+				<span id="signin" ng-show="immediateFailed"> <span
+					id="myGsignin"></span>
+				</span> <span ng-show="userProfile"> <a target="_blank"
+					href="{{userProfile.googlePublicProfileUrl}}"> <span
+						class="name">{{userProfile.googleDisplayName}}</span> <img
+						ng-src="{{userProfile.googlePublicProfilePhotoUrl|profilePicture:32}}" />
+				</a>
+					<button class="button danger disconnect" ng-click="disconnect()"
+						style="">Disconnect</button>
+				</span>
+			</div>
+ -->
+		</div>
+		</header>
+
+		<!-- 		<span id="signinButton"> <span class="g-signin"
+			data-callback="signinCallback"
+			data-clientid="599466686196-0q47rt4uh7411oe3pf3gf369ftumt6uq.apps.googleusercontent.com"
+			data-cookiepolicy="single_host_origin"
+			data-requestvisibleactions="http://schema.org/AddAction"
+			data-scope="https://www.googleapis.com/auth/plus.login"> </span>
+		</span> -->
+
+		<footer> Crowd source platform - Copyright (c) 2004, All
+		Rights Reserved<!-- <a target="_blank" href="http://angularjs.org/">
+      <img src="images/AngularJS-small.png" style="vertical-align: middle" /> -->
+		</a> </footer>
+	</div>
+</body>
+</html>
