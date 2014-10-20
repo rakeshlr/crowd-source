@@ -31,7 +31,49 @@
 	href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" />
 <link rel="stylesheet" href="stylesheets/main.css" />
 <link rel="stylesheet" href="stylesheets/gh-buttons.css" />
+ <link href="/stylesheets/screen.css" media="all" rel="stylesheet" type="text/css"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+    <script language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript"></script>
+    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load('payments', '1.0', {
+        'packages': ['sandbox_config']
+      });
+
+      // Success handler
+      var successHandler = function(status){
+        if (window.console != undefined) {
+          console.log("Purchase completed successfully: ", status);
+          //window.location.reload();
+        }
+      }
+
+      // Failure handler
+      var failureHandler = function(status){
+        if (window.console != undefined) {
+          console.log("Purchase failed ", status);
+        }
+      }
+
+      function purchase(item) {
+        var generated_jwt;
+        if (item == "Item1") {
+          generated_jwt = "<%= request.getParameter("token") %>";
+        }  else {
+          return;
+        }
+
+        goog.payments.inapp.buy({
+          'jwt'     : generated_jwt,
+          'success' : successHandler,
+          'failure' : failureHandler
+        });
+      }
+    </script>
+
+
 <script src="https://sandbox.google.com/checkout/inapp/lib/buy.js"></script>
+
 </head>
 
 <body>
@@ -156,7 +198,11 @@
  %> <a href="/serve?blob-key=<%=entry.getProperty("content")%>">Download</a>
 							<%
 								} else {
-							%> <a href="#">Buy (Rs 100)</a> <%
+							%> 
+							<button class="buy-button" type="button" onClick="purchase('Item1');">Buy
+								(Rs 100)</button>
+								
+								<%
  	}
  %>
 						</td>
@@ -239,3 +285,5 @@
 	</div>
 </body>
 </html>
+
+
