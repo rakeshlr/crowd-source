@@ -1,8 +1,8 @@
-<!-- Indices written at Sun, 28 Sep 2014 21:55:03 IST -->
+<!-- Indices written at Mon, 20 Oct 2014 00:46:24 IST -->
 
 <datastore-indexes>
 
-    <!-- Used 1 time in query history -->
+    <!-- Used 18 times in query history -->
     <datastore-index kind="3DDATA" ancestor="true" source="auto">
         <property name="date" direction="desc"/>
     </datastore-index>

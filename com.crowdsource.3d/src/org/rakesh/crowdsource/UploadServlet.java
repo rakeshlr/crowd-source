@@ -57,7 +57,7 @@ public class UploadServlet extends HttpServlet {
 		newContent.setProperty("desc", desc);
 		newContent.setProperty("group", group);
 		newContent.setProperty("type", type);
-		newContent.setProperty("previewPic", previewPic);
+		newContent.setProperty("previewPic", previewPic.getKeyString());
 		newContent.setProperty("content", blobKey.getKeyString());
 		
 		

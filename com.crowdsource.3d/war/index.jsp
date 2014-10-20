@@ -16,6 +16,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page
 	import="com.google.appengine.api.blobstore.BlobstoreServiceFactory"%>
+
 <%
 	BlobstoreService blobstoreService = BlobstoreServiceFactory
 			.getBlobstoreService();
@@ -28,8 +29,9 @@
 <title>Crowd source 3d</title>
 <link rel="stylesheet"
 	href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" />
-<link rel="stylesheet" href="stylesheets/photohunt.css" />
+<link rel="stylesheet" href="stylesheets/main.css" />
 <link rel="stylesheet" href="stylesheets/gh-buttons.css" />
+<script src="https://sandbox.google.com/checkout/inapp/lib/buy.js"></script>
 </head>
 
 <body>
@@ -37,6 +39,10 @@
 		<header>
 			<div id="topHeader">
 				<h1>3D content repository</h1>
+				<!-- 				<p>3D ContentRepository is an online community of
+					users/developers who share and download user contributed 3D content
+					of various categories.</p> -->
+
 				<div id="profileInfo">
 					<span id="signin"> <%
  	User user = userService.getCurrentUser();
@@ -46,7 +52,7 @@
  				+ userService.createLogoutURL(request.getRequestURI())
  				+ "'> <b> LogOut <b/> </a>");
  	} else {
- 		out.println("Please <a href='"
+ 		out.println("<a href='"
  				+ userService.createLoginURL(request.getRequestURI())
  				+ "'> <b> LogIn <b/> </a>");
  	}
@@ -59,55 +65,117 @@
 
 
 		<section>
-			<h1>Welcome to 3D ContentRepository!</h1>
 
-			3D ContentRepository is an online community of users/developers who
-			share and download user contributed 3D content of various categories.
-
-			<br>
-
-			<h2>Recently added</h2>
-
-			<%
-				DatastoreService datastore = DatastoreServiceFactory
-						.getDatastoreService();
-				Key key = KeyFactory.createKey("3DContents", "contentId");
-				// Run an ancestor query to ensure we see the most up-to-date
-				// view of the Greetings belonging to the selected Guestbook.
-				Query query = new Query("3DDATA", key).addSort("date",
-						Query.SortDirection.DESCENDING);
-				List<Entity> contentList = datastore.prepare(query).asList(
-						FetchOptions.Builder.withLimit(5));
-				if (contentList.isEmpty()) {
-			%>
-
-			<p>No content available at present. Come back after some time.</p>
-			<%
-				} else {
-			%>
-			<table style="width: 100%">
-				<tr>
+			<div id="tabs">
+				<ul>
+					<li><a href="?category=recent">All Recent</a></li>
+					<li><a href="?category=hydrocarbons">Hydrocarbons</a></li>
+					<li><a href="?category=organic">Organic</a></li>
+					<li><a href="?category=proteins">Proteins</a></li>
+					<li><a href="?category=others">Others</a></li>
+					<li><a href="?category=free">Free</a></li>
+					<li><a href="?category=paid">Paid</a></li>
 					<%
-						int count = 1;
-							for (Entity entry : contentList) {
+						if (user != null) {
 					%>
-					<%-- <td width="20%"><%=entry.getProperty("title")%></td> --%>
-
-					<img src="/serve?blob-key=<%=entry.getProperty("previewPic")%>"
-						alt="" border='1' height='100' width='100' />
-
+					<li><a href="?category=myuploads">My-Uploads</a></li>
 					<%
-						if (count++ > 8)
-									break;
+						}
+					%>
+				</ul>
+				<br>
+			</div>
 
+			<div id="contentList">
+
+				<%
+					String cat = (String) request.getParameter("category");
+					System.out.println(cat);
+					DatastoreService datastore = DatastoreServiceFactory
+							.getDatastoreService();
+					Key key = KeyFactory.createKey("3DContents", "contentId");
+					// Run an ancestor query to ensure we see the most up-to-date
+					// view of the Greetings belonging to the selected Guestbook.
+					Query query = null;
+					if (cat == null || cat.equals("recent")) {
+						query = new Query("3DDATA", key).addSort("date",
+								Query.SortDirection.DESCENDING);
+						cat = "recent";
+					} else if (cat.equals("hydrocarbons")) {
+						query = new Query("3DDATA", key).addFilter("group",
+								Query.FilterOperator.EQUAL, "Hydrocarbons");
+					} else if (cat.equals("proteins")) {
+						query = new Query("3DDATA", key).addFilter("group",
+								Query.FilterOperator.EQUAL, "Protein");
+					} else if (cat.equals("organic")) {
+						query = new Query("3DDATA", key).addFilter("group",
+								Query.FilterOperator.EQUAL, "Organic");
+					} else if (cat.equals("others")) {
+						query = new Query("3DDATA", key).addFilter("group",
+								Query.FilterOperator.EQUAL, "Others");
+					} else if (cat.equals("free")) {
+						query = new Query("3DDATA", key).addFilter("type",
+								Query.FilterOperator.EQUAL, "Free");
+					} else if (cat.equals("paid")) {
+						query = new Query("3DDATA", key).addFilter("type",
+								Query.FilterOperator.EQUAL, "Paid");
+					} else if (cat.equals("myuploads")) {
+						query = new Query("3DDATA", key).addFilter("user",
+								Query.FilterOperator.EQUAL, user);
+					} else {
+						query = new Query("3DDATA", key).addSort("date",
+								Query.SortDirection.DESCENDING);
+					}
+					out.println("<h2>" + cat.toUpperCase() + "</h2>");
+					List<Entity> contentList = datastore.prepare(query).asList(
+							FetchOptions.Builder.withLimit(5));
+					if (contentList.isEmpty()) {
+				%>
+				<p>No content available at present. Come back after some time.</p>
+				<%
+					} else {
+						Object pageAtr = request.getParameter("page");
+						System.out.println(pageAtr);
+						int pageId = pageAtr == null ? 0
+								: new Integer((String) pageAtr);
+						int count = (pageId * 10 + 1);
+				%>
+				<table style="width: 100%">
+					<%
+						for (Entity entry : contentList) {
+					%>
+					<tr>
+						<td width="20%"><img
+							src="/serve?blob-key=<%=entry.getProperty("previewPic")%>" alt=""
+							border='0' height='160' width='160' /></td>
+						<td width="60%">
+							<h3><%=entry.getProperty("title")%></h3> Uploaded on <%=entry.getProperty("date")%>
+							<br>Category : <%=entry.getProperty("group")%> , Type : <%=entry.getProperty("type")%>
+							<p><%=entry.getProperty("desc")%></p> <br> <%
+ 	if ("Free".equals(entry.getProperty("type"))) {
+ %> <a href="/serve?blob-key=<%=entry.getProperty("content")%>">Download</a>
+							<%
+								} else {
+							%> <a href="#">Buy (Rs 100)</a> <%
+ 	}
+ %>
+						</td>
+					</tr>
+					<%
+						if (count++ > 10)
+									break;
 							}
 					%>
-				</tr>
-			</table>
-			<%
-				}
-			%>
-			<h2>Categories</h2>
+				</table>
+				<%-- 				<%
+					//if(contentList.size()>count)
+				%> --%>
+				<a href="?page=<%=count / 10%>">Next</a>
+				<%
+					}
+				%>
+				<!-- 	<h2>Categories</h2> -->
+			</div>
 		</section>
 
 
@@ -116,9 +184,9 @@
 			if (user != null) {
 		%>
 		<br>
-		<p>
+		<h2>
 			<i><b> You can upload your 3D content here! </b></i>
-		</p>
+		</h2>
 		<form action="<%=blobstoreService.createUploadUrl("/upload")%>"
 			method="post" enctype="multipart/form-data">
 			<table>
