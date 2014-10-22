@@ -199,7 +199,7 @@
 							<%
 								} else {
 							%> 
-							<button class="buy-button" type="button" onClick="purchase('Item1');">Buy
+							<button class="buy-button" type="button" onClick="purchase('<%=entry.getProperty("previewPic")%>');">Buy
 								(Rs 100)</button>
 								
 								<%

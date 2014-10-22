@@ -5,8 +5,11 @@
 	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/oauth2-v2r78lv1.18.0-rc"/>
 	<classpathentry kind="con" path="com.google.gdt.eclipse.managedapis.MANAGED_API_CONTAINER/calendar-v3r92lv1.18.0-rc"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="lib" path="C:/Users/bosch/Downloads/jsontoken-1.0.jar"/>
-	<classpathentry kind="lib" path="C:/Users/bosch/Downloads/joda-time-2.5.jar"/>
-	<classpathentry kind="lib" path="C:/Users/bosch/Downloads/commons-codec-1.9.jar"/>
+	<classpathentry kind="lib" path=".google_apis/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path=".google_apis/joda-time-2.1.jar"/>
+	<classpathentry kind="lib" path=".google_apis/jsontoken-1.0.jar"/>
+	<classpathentry kind="lib" path=".google_apis/google-collections-1.0.jar"/>
+	<classpathentry kind="lib" path=".google_apis/gson-2.2.2.jar"/>
+	<classpathentry kind="lib" path=".google_apis/json-simple-1.1.1.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>
