@@ -1,4 +1,4 @@
-package com.rakesh.gwallet;
+package org.rakesh.crowdsource.purchase;
 
 public class Request {
 	private String price;

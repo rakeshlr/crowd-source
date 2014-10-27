@@ -19,7 +19,7 @@
 
 <%
 	BlobstoreService blobstoreService = BlobstoreServiceFactory
-			.getBlobstoreService();
+	.getBlobstoreService();
 	UserService userService = UserServiceFactory.getUserService();
 %>
 
@@ -31,45 +31,63 @@
 	href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" />
 <link rel="stylesheet" href="stylesheets/main.css" />
 <link rel="stylesheet" href="stylesheets/gh-buttons.css" />
- <link href="/stylesheets/screen.css" media="all" rel="stylesheet" type="text/css"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-    <script language="javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript"></script>
-    <script type="text/javascript" src="http://www.google.com/jsapi"></script>
-    <script type="text/javascript">
-      google.load('payments', '1.0', {
-        'packages': ['sandbox_config']
-      });
+<link href="/stylesheets/screen.css" media="all" rel="stylesheet"
+	type="text/css" />
+<meta name="viewport" content="width=device-width, initial-scale=1"></meta>
+<script language="javascript"
+	src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"
+	type="text/javascript"></script>
+<script type="text/javascript" src="http://www.google.com/jsapi"></script>
+<script type="text/javascript">
+	google.load('payments', '1.0', {
+		'packages' : [ 'sandbox_config' ]
+	});
 
-      // Success handler
-      var successHandler = function(status){
-        if (window.console != undefined) {
-          console.log("Purchase completed successfully: ", status);
-          //window.location.reload();
-        }
-      }
+	// Success handler
+	var successHandler = function(status) {
+		if (window.console != undefined) {
+			console.log("Purchase completed successfully: ", status);
+			alert(status);
+			window.location.reload();
+		}
+	}
 
-      // Failure handler
-      var failureHandler = function(status){
-        if (window.console != undefined) {
-          console.log("Purchase failed ", status);
-        }
-      }
+	// Failure handler
+	var failureHandler = function(status) {
+		if (window.console != undefined) {
+			console.log("Purchase failed ", status);
+		}
+	}
 
-      function purchase(item) {
-        var generated_jwt;
-        if (item == "Item1") {
-          generated_jwt = "<%= request.getParameter("token") %>";
-        }  else {
-          return;
-        }
+	function purchase(generated_jwt) {
+		if (generated_jwt == null) {
+			alert("jwt token is null");
+			return;
+		}
 
-        goog.payments.inapp.buy({
-          'jwt'     : generated_jwt,
-          'success' : successHandler,
-          'failure' : failureHandler
-        });
-      }
-    </script>
+		goog.payments.inapp.buy({
+			'jwt' : generated_jwt,
+			'success' : successHandler,
+			'failure' : failureHandler
+		});
+	}
+
+	function initiatePurchase(itemId) {
+			alert(itemId);
+		if (itemId == null) {
+			return;
+		}
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function() {
+			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+				purchase(xmlhttp.responseText, itemId );
+			}
+		}
+		xmlhttp.open("GET", "/main?item=" + itemId, true);
+		xmlhttp.send();
+	}
+</script>
+</script>
 
 
 <script src="https://sandbox.google.com/checkout/inapp/lib/buy.js"></script>
@@ -127,9 +145,7 @@
 				</ul>
 				<br>
 			</div>
-
 			<div id="contentList">
-
 				<%
 					String cat = (String) request.getParameter("category");
 					System.out.println(cat);
@@ -198,11 +214,10 @@
  %> <a href="/serve?blob-key=<%=entry.getProperty("content")%>">Download</a>
 							<%
 								} else {
-							%> 
-							<button class="buy-button" type="button" onClick="purchase('<%=entry.getProperty("previewPic")%>');">Buy
-								(Rs 100)</button>
-								
-								<%
+							%>
+							<button class="buy-button" type="button"
+								onClick="initiatePurchase('<%=entry.getKey()%>');">Buy
+								(Rs 100)</button> <%
  	}
  %>
 						</td>
@@ -223,8 +238,6 @@
 				<!-- 	<h2>Categories</h2> -->
 			</div>
 		</section>
-
-
 
 		<%
 			if (user != null) {
@@ -276,12 +289,12 @@
 			</table>
 			<br>
 		</form>
-
 		<%
 			}
 		%>
 		<footer> Crowd source platform - Copyright (c) 2004, All
 			Rights Reserved. </footer>
+		<div id="ajaxOutput"></div>
 	</div>
 </body>
 </html>
