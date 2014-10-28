@@ -110,10 +110,14 @@ public class Datastore {
 		newContent.setProperty(DESC, checkNull(req.getParameter(DESC)));
 		newContent.setProperty(GROUP, checkNull(req.getParameter(GROUP)));
 		newContent.setProperty(TYPE, checkNull(req.getParameter(TYPE)));
-		newContent.setProperty(PREVIEW_PIC_ID,
-				checkNull(previewPic.getKeyString()));
-		newContent.setProperty(CONTENT_ID, checkNull(blobKey.getKeyString()));
-		newContent.setProperty(ID, newContent.getKey());
+		newContent.setProperty(PRICE, checkNull(req.getParameter(PRICE)));
+		if (previewPic != null)
+			newContent.setProperty(PREVIEW_PIC_ID,
+					checkNull(previewPic.getKeyString()));
+		if (blobKey != null)
+			newContent.setProperty(CONTENT_ID,
+					checkNull(blobKey.getKeyString()));
+//		newContent.setProperty(ID, newContent.getKey());
 		put(newContent);
 	}
 

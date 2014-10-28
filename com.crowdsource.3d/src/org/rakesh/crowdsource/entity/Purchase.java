@@ -1,11 +1,11 @@
 package org.rakesh.crowdsource.entity;
 
+import java.util.Date;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-
-import org.rakesh.crowdsource.dao.Datastore;
 
 @Entity
 public class Purchase {
@@ -17,7 +17,7 @@ public class Purchase {
 	String buyer;
 	String itemId;
 	Long amount;
-	String dateOfPurchase;
+	Date dateOfPurchase;
 	String orderId;
 	boolean claimedBySellr = false;
 
@@ -29,6 +29,7 @@ public class Purchase {
 		this.itemId = itemId;
 		this.amount = price.matches("[0-9]*") ? Long.parseLong(price) : 1;
 		this.orderId = orderId;
+		dateOfPurchase = new Date();
 	}
 
 	public long getId() {
@@ -71,11 +72,11 @@ public class Purchase {
 		this.amount = amount;
 	}
 
-	public String getDateOfPurchase() {
+	public Date getDateOfPurchase() {
 		return dateOfPurchase;
 	}
 
-	public void setDateOfPurchase(String dateOfPurchase) {
+	public void setDateOfPurchase(Date dateOfPurchase) {
 		this.dateOfPurchase = dateOfPurchase;
 	}
 

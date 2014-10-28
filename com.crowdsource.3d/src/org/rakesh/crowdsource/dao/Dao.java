@@ -20,7 +20,7 @@ public enum Dao {
 	public List<Item> listItems() {
 		EntityManager em = EMFService.get().createEntityManager();
 		// read the existing entries
-		Query q = em.createQuery("select m from Items m");
+		Query q = em.createQuery("select m from Item m");
 		List<Item> items = q.getResultList();
 		return items;
 	}
@@ -73,15 +73,18 @@ public enum Dao {
 		Entity item = Datastore.getInstance().getEntityWithKey(itemKey);
 
 		addPurchase(item.getProperty(Datastore.USER).toString(),
-				user.toString(), item.getKey().toString(), payload
-						.response_getter().orderId_getter(),
+				user.toString(), item.getKey().toString(), Math.random() + "",
 				item.getProperty(Datastore.PRICE).toString());
+		// addPurchase(item.getProperty(Datastore.USER).toString(),
+		// user.toString(), item.getKey().toString(), payload
+		// .response_getter().orderId_getter(),
+		// item.getProperty(Datastore.PRICE).toString());
 	}
 
 	public List<Purchase> getPurchases(String buyerId) {
 		EntityManager em = EMFService.get().createEntityManager();
 		Query q = em
-				.createQuery("select t from Todo t where t.buyer = :userId");
+				.createQuery("select t from Purchase t where t.buyer = :userId");
 		q.setParameter("userId", buyerId);
 		List<Purchase> pruchases = q.getResultList();
 		return pruchases;
@@ -90,10 +93,20 @@ public enum Dao {
 	public List<Purchase> getSales(String sellerId) {
 		EntityManager em = EMFService.get().createEntityManager();
 		Query q = em
-				.createQuery("select t from Todo t where t.seller = :userId");
+				.createQuery("select t from Purchase t where t.seller = :userId");
 		q.setParameter("userId", sellerId);
 		List<Purchase> pruchases = q.getResultList();
 		return pruchases;
+	}
+
+	public boolean isItemPurchased(String buyerId, String itemId) {
+		EntityManager em = EMFService.get().createEntityManager();
+		Query q = em
+				.createQuery("select t from Purchase t where t.seller = :userId and t.itemId = :item");
+		q.setParameter("userId", buyerId);
+		q.setParameter("item", itemId);
+		List<Purchase> pruchases = q.getResultList();
+		return !pruchases.isEmpty();
 	}
 
 	public void removePurchase(long id) {

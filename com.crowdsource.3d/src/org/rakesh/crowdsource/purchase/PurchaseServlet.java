@@ -37,6 +37,7 @@ public class PurchaseServlet extends HttpServlet {
 			JWT_Handler handler = new JWT_Handler(ISSUER, SIGNING_KEY);
 			System.out.println("ItemId : " + req.getParameter("item"));
 			token1 = handler.getJWT(req.getParameter("item"));
+			System.out.println("JWT : " + token1);
 			req.setAttribute("token", token1);
 			resp.getWriter().print(token1);
 			// set and forward the HTTP request and response
@@ -47,8 +48,10 @@ public class PurchaseServlet extends HttpServlet {
 			// }
 
 		} catch (InvalidKeyException e) {
+			e.printStackTrace();
 			// TODO Auto-generated catch block
 		} catch (SignatureException e) {
+			e.printStackTrace();
 			// TODO Auto-generated catch block
 			// } catch (ServletException e) {
 			// TODO Auto-generated catch block
@@ -70,11 +73,11 @@ public class PurchaseServlet extends HttpServlet {
 				.getAsJsonArray();
 		Payload payload_1 = gson.fromJson(payload.get(0), Payload.class);
 		// validate the payment request and respond back to Google
-		if (payload_1.iss_getter().equals("Google")
-				&& payload_1.aud_getter().equals(ISSUER)) {
-			if (payload_1.response_getter() != null
-					&& payload_1.response_getter().orderId_getter() != null) {
-				orderID = payload_1.response_getter().orderId_getter();
+		if (payload_1.iss_getter().equals(ISSUER)
+				&& payload_1.aud_getter().equals("Google")) {
+//			if (payload_1.response_getter() != null
+//					&& payload_1.response_getter().orderId_getter() != null) {
+//				orderID = payload_1.response_getter().orderId_getter();
 				if (payload_1.request_getter().currencyCode_getter() != null
 						&& payload_1.request_getter().sellerData_getter() != null
 						&& payload_1.request_getter().name_getter() != null
@@ -84,19 +87,24 @@ public class PurchaseServlet extends HttpServlet {
 							.getUserService();
 					User user = userService.getCurrentUser();
 
-					// Datastore dstore = Datastore.getInstance();
-					// dstore.addPurchase(payload_1, user);
-					Dao.INSTANCE.addPurchase(user, payload_1);
+					try {
+						// Datastore dstore = Datastore.getInstance();
+						// dstore.addPurchase(payload_1, user);
+						Dao.INSTANCE.addPurchase(user, payload_1);
 
-					System.out.println(Dao.INSTANCE.listPurchases());
+//						System.out.println(Dao.INSTANCE.listPurchases());
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
 					// respond back to complete payment
 					response.setStatus(200);
 					PrintWriter writer = response.getWriter();
-					writer.write(orderID);
+//					writer.write(orderID);
 
 				}
-			}
+//			}
 
 		}
 

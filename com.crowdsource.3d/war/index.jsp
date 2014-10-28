@@ -13,6 +13,7 @@
 <%@ page import="com.google.appengine.api.datastore.KeyFactory"%>
 <%@ page import="com.google.appengine.api.datastore.Query"%>
 <%@ page import="java.util.List"%>
+<%@ page import="org.rakesh.crowdsource.dao.Dao"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page
 	import="com.google.appengine.api.blobstore.BlobstoreServiceFactory"%>
@@ -31,10 +32,10 @@
 	href="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/themes/base/jquery-ui.css" />
 <link rel="stylesheet" href="stylesheets/main.css" />
 <link rel="stylesheet" href="stylesheets/gh-buttons.css" />
-<link href="/stylesheets/screen.css" media="all" rel="stylesheet"
-	type="text/css" />
+<!-- <link href="/stylesheets/screen.css" media="all" rel="stylesheet"
+	type="text/css" /> -->
 <meta name="viewport" content="width=device-width, initial-scale=1"></meta>
-<script language="javascript"
+<script
 	src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"
 	type="text/javascript"></script>
 <script type="text/javascript" src="http://www.google.com/jsapi"></script>
@@ -47,7 +48,7 @@
 	var successHandler = function(status) {
 		if (window.console != undefined) {
 			console.log("Purchase completed successfully: ", status);
-			alert(status);
+			alert("Purchase completed successfully: " + status);
 			window.location.reload();
 		}
 	}
@@ -73,22 +74,33 @@
 	}
 
 	function initiatePurchase(itemId) {
-			alert(itemId);
 		if (itemId == null) {
 			return;
 		}
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
 			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-				purchase(xmlhttp.responseText, itemId );
+				//purchase(xmlhttp.responseText);
+				xmlhttp
+						.open("POST", "/main?jwt=" + xmlhttp.responseText,
+								false);
+				xmlhttp.send();
 			}
 		}
 		xmlhttp.open("GET", "/main?item=" + itemId, true);
 		xmlhttp.send();
 	}
-</script>
-</script>
 
+	function checkContentType() {
+		if (document.getElementById("typeCombo").value == "Free") {
+			document.getElementById("pricefield").disabled = true;
+			document.getElementById("pricefield").value = "";
+		} else {
+			document.getElementById("pricefield").disabled = false;
+			document.getElementById("pricefield").value = "100";
+		}
+	}
+</script>
 
 <script src="https://sandbox.google.com/checkout/inapp/lib/buy.js"></script>
 
@@ -201,6 +213,7 @@
 				<table style="width: 100%">
 					<%
 						for (Entity entry : contentList) {
+								String keystring = KeyFactory.keyToString(entry.getKey());
 					%>
 					<tr>
 						<td width="20%"><img
@@ -210,14 +223,16 @@
 							<h3><%=entry.getProperty("title")%></h3> Uploaded on <%=entry.getProperty("date")%>
 							<br>Category : <%=entry.getProperty("group")%> , Type : <%=entry.getProperty("type")%>
 							<p><%=entry.getProperty("desc")%></p> <br> <%
- 	if ("Free".equals(entry.getProperty("type"))) {
+ 	if ("Free".equals(entry.getProperty("type"))   || ( user!=null && Dao.INSTANCE.isItemPurchased(user.toString(), keystring))) {
  %> <a href="/serve?blob-key=<%=entry.getProperty("content")%>">Download</a>
 							<%
 								} else {
 							%>
 							<button class="buy-button" type="button"
-								onClick="initiatePurchase('<%=entry.getKey()%>');">Buy
-								(Rs 100)</button> <%
+								onClick="initiatePurchase('<%=keystring%>');">
+								Buy (Rs
+								<%=entry.getProperty("price")%>)
+							</button> <%
  	}
  %>
 						</td>
@@ -252,11 +267,11 @@
 				<tbody>
 					<tr>
 						<td>3D content file</td>
-						<td><input type="file" name="content"></td>
+						<td><input type="file" name="content" required="true"></td>
 					</tr>
 					<tr>
 						<td>Title</td>
-						<td><input type="text" name="title"></td>
+						<td><input type="text" name="title" required="true"></td>
 					<tr>
 						<td>Basic Description</td>
 						<td><TEXTAREA NAME="desc" ROWS="4"></TEXTAREA></td>
@@ -272,14 +287,21 @@
 					</tr>
 					<tr>
 						<td>Content Type</td>
-						<td><select name="type" size="1" id="type">
+						<td><select id="typeCombo" name="type" size="1" id="type"
+							onchange="checkContentType();">
 								<option>Free</option>
 								<option>Paid</option>
 						</select></td>
 					</tr>
 					<tr>
+						<td>Price</td>
+						<td><input type="number" id="pricefield" name="price"
+							disabled="true"></td>
+					</tr>
+					<tr>
 						<td>Preview Image</td>
-						<td><input type="file" name="previewPic" accept="image/*"></td>
+						<td><input type="file" name="previewPic" accept="image/*"
+							required="true"></td>
 					</tr>
 					<tr>
 						<td></td>

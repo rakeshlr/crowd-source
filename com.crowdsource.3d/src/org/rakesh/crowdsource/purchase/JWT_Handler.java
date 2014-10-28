@@ -67,7 +67,7 @@ public class JWT_Handler {
 		request.addProperty("price", (price instanceof String) ? (String) price
 				: "1");
 		request.addProperty("currencyCode", "INR");
-		String seller = (String) entity.getProperty(Datastore.USER);
+		String seller = (String) entity.getProperty(Datastore.USER).toString();
 		UserService userService = UserServiceFactory.getUserService();
 		User user = userService.getCurrentUser();
 		request.addProperty("sellerData", itemKey);
