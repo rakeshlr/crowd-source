@@ -12,6 +12,7 @@ import org.rakesh.crowdsource.purchase.Payload;
 
 import com.google.appengine.api.blobstore.BlobKey;
 import com.google.appengine.api.datastore.Entity;
+import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.users.User;
 
 public enum Dao {
@@ -51,7 +52,7 @@ public enum Dao {
 	public List<Purchase> listPurchases() {
 		EntityManager em = EMFService.get().createEntityManager();
 		// read the existing entries
-		Query q = em.createQuery("select m from Purchase m");
+		Query q = em.createQuery("select t from Purchase t");
 		List<Purchase> purchases = q.getResultList();
 		return purchases;
 	}
@@ -73,7 +74,7 @@ public enum Dao {
 		Entity item = Datastore.getInstance().getEntityWithKey(itemKey);
 
 		addPurchase(item.getProperty(Datastore.USER).toString(),
-				user.toString(), item.getKey().toString(), Math.random() + "",
+				user.toString(), KeyFactory.keyToString(item.getKey()), Math.random() + "",
 				item.getProperty(Datastore.PRICE).toString());
 		// addPurchase(item.getProperty(Datastore.USER).toString(),
 		// user.toString(), item.getKey().toString(), payload
@@ -100,6 +101,7 @@ public enum Dao {
 	}
 
 	public boolean isItemPurchased(String buyerId, String itemId) {
+//		System.out.println(listPurchases().isEmpty());
 		EntityManager em = EMFService.get().createEntityManager();
 		Query q = em
 				.createQuery("select t from Purchase t where t.seller = :userId and t.itemId = :item");
@@ -117,5 +119,14 @@ public enum Dao {
 		} finally {
 			em.close();
 		}
+	}
+
+	public void addPurchase(User user, String itemKey) {
+		Entity item = Datastore.getInstance().getEntityWithKey(itemKey);
+
+		addPurchase(item.getProperty(Datastore.USER).toString(),
+				user.toString(), itemKey, Math.random() + "",
+				item.getProperty(Datastore.PRICE).toString());	// TODO Auto-generated method stub
+		
 	}
 }

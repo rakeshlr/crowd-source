@@ -81,13 +81,14 @@
 		xmlhttp.onreadystatechange = function() {
 			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
 				//purchase(xmlhttp.responseText);
-				xmlhttp
-						.open("POST", "/main?jwt=" + xmlhttp.responseText,
-								false);
-				xmlhttp.send();
+				//xmlhttp
+					//	.open("POST", "/main?jwt=" + xmlhttp.responseText,
+						//		false);
+				//xmlhttp.send();
 			}
 		}
-		xmlhttp.open("GET", "/main?item=" + itemId, true);
+		//xmlhttp.open("GET", "/main?item=" + itemId, true);
+		xmlhttp.open("POST", "/main?item=" + itemId, false);
 		xmlhttp.send();
 	}
 
@@ -150,7 +151,9 @@
 					<%
 						if (user != null) {
 					%>
+					<li><a href="?category=mypurchases">Purchased Items</a></li>
 					<li><a href="?category=myuploads">My-Uploads</a></li>
+					<li><a href="?category=sellerdashboard">Seller Dashboard</a></li>
 					<%
 						}
 					%>
@@ -223,7 +226,9 @@
 							<h3><%=entry.getProperty("title")%></h3> Uploaded on <%=entry.getProperty("date")%>
 							<br>Category : <%=entry.getProperty("group")%> , Type : <%=entry.getProperty("type")%>
 							<p><%=entry.getProperty("desc")%></p> <br> <%
- 	if ("Free".equals(entry.getProperty("type"))   || ( user!=null && Dao.INSTANCE.isItemPurchased(user.toString(), keystring))) {
+ 	if ("Free".equals(entry.getProperty("type"))
+ 					|| (user != null && Dao.INSTANCE.isItemPurchased(
+ 							user.toString(), keystring))) {
  %> <a href="/serve?blob-key=<%=entry.getProperty("content")%>">Download</a>
 							<%
 								} else {

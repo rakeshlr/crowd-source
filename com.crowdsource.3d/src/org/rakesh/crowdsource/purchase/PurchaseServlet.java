@@ -5,12 +5,12 @@ import java.io.PrintWriter;
 import java.security.InvalidKeyException;
 import java.security.SignatureException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.rakesh.crowdsource.dao.Dao;
-import org.rakesh.crowdsource.dao.Datastore;
 
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
@@ -62,6 +62,24 @@ public class PurchaseServlet extends HttpServlet {
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
+		
+		//testing
+		String item = request.getParameter("item");
+		if(item!=null){
+			try {
+				UserService userService = UserServiceFactory
+						.getUserService();
+				User user = userService.getCurrentUser();
+				// Datastore dstore = Datastore.getInstance();
+				// dstore.addPurchase(payload_1, user);
+				Dao.INSTANCE.addPurchase(user, item);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			return;
+		}
+		
 		// "Handles post request.
 		String jwt = request.getParameter("jwt");
 		String orderID;
