@@ -11,8 +11,8 @@ import javax.persistence.Id;
 public class Purchase {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	long id;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE)
+	Long id;
 	String seller;
 	String buyer;
 	String itemId;
@@ -29,7 +29,8 @@ public class Purchase {
 		this.itemId = itemId;
 		this.amount = price.matches("[0-9]*") ? Long.parseLong(price) : 1;
 		this.orderId = orderId;
-		dateOfPurchase = new Date();
+		this.dateOfPurchase = new Date();
+		this.claimedBySellr = false;
 	}
 
 	public long getId() {

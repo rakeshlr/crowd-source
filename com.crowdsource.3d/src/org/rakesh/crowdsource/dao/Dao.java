@@ -1,6 +1,7 @@
 package org.rakesh.crowdsource.dao;
 
 import java.util.List;
+import java.util.Random;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
@@ -74,7 +75,7 @@ public enum Dao {
 		Entity item = Datastore.getInstance().getEntityWithKey(itemKey);
 
 		addPurchase(item.getProperty(Datastore.USER).toString(),
-				user.toString(), KeyFactory.keyToString(item.getKey()), Math.random() + "",
+				user.toString(), KeyFactory.keyToString(item.getKey()), new Random(10000).nextLong() + "",
 				item.getProperty(Datastore.PRICE).toString());
 		// addPurchase(item.getProperty(Datastore.USER).toString(),
 		// user.toString(), item.getKey().toString(), payload

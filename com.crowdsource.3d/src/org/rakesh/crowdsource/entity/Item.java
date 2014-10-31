@@ -9,7 +9,7 @@ import javax.persistence.Id;
 public class Item {
 
 	@Id
-	long id;
+	Long id;
 	String user;
 	String contentId;
 	Date uploadDate;
