@@ -11,6 +11,11 @@ import com.google.api.client.extensions.appengine.auth.oauth2.AbstractAppEngineA
 
 public class LoginServlet extends AbstractAppEngineAuthorizationCodeServlet {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws IOException {

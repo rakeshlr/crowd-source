@@ -1,7 +1,9 @@
 package org.rakesh.crowdsource.purchase;
 
 import java.io.IOException;
+import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.security.InvalidKeyException;
 import java.security.SignatureException;
 
@@ -31,55 +33,39 @@ public class PurchaseServlet extends HttpServlet {
 	public void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException {
 		// Handles get requests.
-		String token1 = null;
+		String jwtString = null;
 		try {
 			// create JWT for the item
+			UserService userService = UserServiceFactory.getUserService();
+			User user = userService.getCurrentUser();
+
 			JWT_Handler handler = new JWT_Handler(ISSUER, SIGNING_KEY);
-			System.out.println("ItemId : " + req.getParameter("item"));
-			token1 = handler.getJWT(req.getParameter("item"));
-			System.out.println("JWT : " + token1);
-			req.setAttribute("token", token1);
-			resp.getWriter().print(token1);
+			String itemId = req.getParameter("item");
+			System.out.println("ItemId : " + itemId);
+			jwtString = handler.getJWT(itemId, user + "");
+			System.out.println("JWT : " + jwtString);
+
 			// set and forward the HTTP request and response
-			// RequestDispatcher dispatcher =
-			// req.getRequestDispatcher("index.jsp?token=" + token1);
+			// RequestDispatcher dispatcher = req
+			// .getRequestDispatcher("index.jsp?token=" + token1);
 			// if (dispatcher != null) {
 			// dispatcher.forward(req, resp);
 			// }
-
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
-			// TODO Auto-generated catch block
 		} catch (SignatureException e) {
 			e.printStackTrace();
-			// TODO Auto-generated catch block
 			// } catch (ServletException e) {
-			// TODO Auto-generated catch block
+			// e.printStackTrace();
 		}
-
+		resp.getWriter().print(jwtString);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
-		
-		//testing
-		String item = request.getParameter("item");
-		if(item!=null){
-			try {
-				UserService userService = UserServiceFactory
-						.getUserService();
-				User user = userService.getCurrentUser();
-				// Datastore dstore = Datastore.getInstance();
-				// dstore.addPurchase(payload_1, user);
-				Dao.INSTANCE.addPurchase(user, item);
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			return;
-		}
-		
+
+		System.out.println("In postback response..");
 		// "Handles post request.
 		String jwt = request.getParameter("jwt");
 		String orderID;
@@ -91,40 +77,39 @@ public class PurchaseServlet extends HttpServlet {
 				.getAsJsonArray();
 		Payload payload_1 = gson.fromJson(payload.get(0), Payload.class);
 		// validate the payment request and respond back to Google
-		if (payload_1.iss_getter().equals(ISSUER)
-				&& payload_1.aud_getter().equals("Google")) {
-//			if (payload_1.response_getter() != null
-//					&& payload_1.response_getter().orderId_getter() != null) {
-//				orderID = payload_1.response_getter().orderId_getter();
+		log("In postback response..iss getter" + payload_1.iss_getter());
+		log("In postback response.. Issser" + ISSUER);
+		log("In postback response..aud" + payload_1.aud_getter());
+		if (payload_1.iss_getter().equals("Google")
+				&& payload_1.aud_getter().equals(ISSUER)) {
+			if (payload_1.response_getter() != null
+					&& payload_1.response_getter().orderId_getter() != null) {
+				orderID = payload_1.response_getter().orderId_getter();
 				if (payload_1.request_getter().currencyCode_getter() != null
 						&& payload_1.request_getter().sellerData_getter() != null
 						&& payload_1.request_getter().name_getter() != null
 						&& payload_1.request_getter().price_getter() != null) {
 					// optional - update local database
-					UserService userService = UserServiceFactory
-							.getUserService();
-					User user = userService.getCurrentUser();
+					// UserService userService = UserServiceFactory
+					// .getUserService();
+					// User user = userService.getCurrentUser();
 
 					try {
-						// Datastore dstore = Datastore.getInstance();
-						// dstore.addPurchase(payload_1, user);
-						Dao.INSTANCE.addPurchase(user, payload_1);
-
-//						System.out.println(Dao.INSTANCE.listPurchases());
+						Dao.INSTANCE.addPurchase(payload_1);
+						log("Purchase Added : " + payload_1);
+						// respond back to complete payment
+						response.setStatus(200);
+						PrintWriter writer = response.getWriter();
+						writer.write(orderID);
 					} catch (Exception e) {
-						// TODO Auto-generated catch block
+						log("Purchase not added : " + e.getMessage()
+								+ e.getStackTrace()[0].getMethodName()
+								+ e.getStackTrace()[0].toString());
 						e.printStackTrace();
 					}
 
-					// respond back to complete payment
-					response.setStatus(200);
-					PrintWriter writer = response.getWriter();
-//					writer.write(orderID);
-
 				}
-//			}
-
+			}
 		}
-
 	}
 }

@@ -15,29 +15,36 @@ public class Purchase {
 	Long id;
 	String seller;
 	String buyer;
-	String itemId;
+	Long itemId;
 	Long amount;
 	Date dateOfPurchase;
 	String orderId;
 	boolean claimedBySellr = false;
 
-	public Purchase(String seller, String buyer, String itemId, String price,
+	public Purchase(String seller, String buyer, Long itemId, Long price,
 			String orderId) {
 		super();
 		this.seller = seller;
 		this.buyer = buyer;
 		this.itemId = itemId;
-		this.amount = price.matches("[0-9]*") ? Long.parseLong(price) : 1;
+		this.amount = (price == null || price == 0) ? price : 1;
 		this.orderId = orderId;
 		this.dateOfPurchase = new Date();
 		this.claimedBySellr = false;
 	}
 
-	public long getId() {
+	@Override
+	public String toString() {
+		return seller + "," + buyer + "," + itemId + "," + seller + ","
+				+ amount + "," + orderId + "," + dateOfPurchase + ","
+				+ claimedBySellr;
+	}
+
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -57,11 +64,11 @@ public class Purchase {
 		this.buyer = buyer;
 	}
 
-	public String getItemId() {
+	public Long getItemId() {
 		return itemId;
 	}
 
-	public void setItemId(String itemId) {
+	public void setItemId(Long itemId) {
 		this.itemId = itemId;
 	}
 
@@ -96,5 +103,7 @@ public class Purchase {
 	public void setClaimedBySellr(boolean claimedBySellr) {
 		this.claimedBySellr = claimedBySellr;
 	}
+
+
 
 }

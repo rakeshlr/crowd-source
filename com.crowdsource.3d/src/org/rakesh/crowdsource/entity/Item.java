@@ -3,12 +3,15 @@ package org.rakesh.crowdsource.entity;
 import java.util.Date;
 
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 @Entity
 public class Item {
 
 	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
 	Long id;
 	String user;
 	String contentId;
@@ -35,11 +38,17 @@ public class Item {
 		this.uploadDate = new Date();
 	}
 
-	public long getId() {
+	@Override
+	public String toString() {
+		return user + "," + contentId + "," + title + "," + desc + "," + group
+				+ "," + type + "," + previewId + "," + price;
+	}
+
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
@@ -122,4 +131,5 @@ public class Item {
 	public void setDownloads(int downloads) {
 		this.downloads = downloads;
 	}
+
 }

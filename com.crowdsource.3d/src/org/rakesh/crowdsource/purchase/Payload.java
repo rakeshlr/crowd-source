@@ -8,16 +8,33 @@ public class Payload {
 	private int iat;
 	private int exp;
 	private Response response;
-	public String iss_getter(){return this.iss;}
-	public String typ_getter(){return this.typ;}
-	public String aud_getter(){return this.aud;}
-	public int iat_getter(){return this.iat;}
-	public int exp_getter(){return this.exp;}
-	public Request request_getter(){return this.request;} 
-	public Response response_getter(){return this.response;}
-	
+
+	public String iss_getter() {
+		return this.iss;
+	}
+
+	public String typ_getter() {
+		return this.typ;
+	}
+
+	public String aud_getter() {
+		return this.aud;
+	}
+
+	public int iat_getter() {
+		return this.iat;
+	}
+
+	public int exp_getter() {
+		return this.exp;
+	}
+
+	public Request request_getter() {
+		return this.request;
+	}
+
+	public Response response_getter() {
+		return this.response;
+	}
 
 }
-
-
-

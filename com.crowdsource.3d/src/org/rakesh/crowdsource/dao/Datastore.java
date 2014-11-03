@@ -17,6 +17,7 @@ import com.google.appengine.api.datastore.KeyFactory;
 import com.google.appengine.api.datastore.Query;
 import com.google.appengine.api.users.User;
 
+@Deprecated
 public class Datastore {
 
 	public static final String TYPE_3DDATA = "3DDATA";

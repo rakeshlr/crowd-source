@@ -5,19 +5,13 @@
 <%@ page import="com.google.appengine.api.users.UserServiceFactory"%>
 <%@ page import="com.google.appengine.api.blobstore.BlobstoreService"%>
 <%@ page import="com.google.appengine.api.datastore.DatastoreService"%>
-<%@ page
-	import="com.google.appengine.api.datastore.DatastoreServiceFactory"%>
-<%@ page import="com.google.appengine.api.datastore.Entity"%>
-<%@ page import="com.google.appengine.api.datastore.FetchOptions"%>
-<%@ page import="com.google.appengine.api.datastore.Key"%>
-<%@ page import="com.google.appengine.api.datastore.KeyFactory"%>
-<%@ page import="com.google.appengine.api.datastore.Query"%>
 <%@ page import="java.util.List"%>
 <%@ page import="org.rakesh.crowdsource.dao.Dao"%>
+<%@ page import="org.rakesh.crowdsource.entity.Item"%>
+<%@ page import="org.rakesh.crowdsource.entity.Purchase"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 <%@ page
 	import="com.google.appengine.api.blobstore.BlobstoreServiceFactory"%>
-
 <%
 	BlobstoreService blobstoreService = BlobstoreServiceFactory
 	.getBlobstoreService();
@@ -48,9 +42,19 @@
 	var successHandler = function(status) {
 		if (window.console != undefined) {
 			console.log("Purchase completed successfully: ", status);
-			alert("Purchase completed successfully: " + status);
-			window.location.reload();
+			//window.location.reload();
+			location = window.location.protocol + "//" + window.location.host
+					+ "/?category=my_purchases";
+			location.reload(true);
 		}
+		alert("Purchase completed successfully: " + status);
+		//setTimeout('Redirect()', 1000);
+	}
+
+	function Redirect() {
+		window.location = window.location.protocol + "//"
+				+ window.location.host + "/?category=my_purchases";
+		window.location.reload();
 	}
 
 	// Failure handler
@@ -58,6 +62,7 @@
 		if (window.console != undefined) {
 			console.log("Purchase failed ", status);
 		}
+		alert("Purchase failed : " + status)
 	}
 
 	function purchase(generated_jwt) {
@@ -77,18 +82,15 @@
 		if (itemId == null) {
 			return;
 		}
+
 		var xmlhttp = new XMLHttpRequest();
 		xmlhttp.onreadystatechange = function() {
 			if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-				//purchase(xmlhttp.responseText);
-				//xmlhttp
-					//	.open("POST", "/main?jwt=" + xmlhttp.responseText,
-						//		false);
-				//xmlhttp.send();
+				purchase(xmlhttp.responseText);
 			}
 		}
-		//xmlhttp.open("GET", "/main?item=" + itemId, true);
-		xmlhttp.open("POST", "/main?item=" + itemId, false);
+		xmlhttp.open("GET", "/main?item=" + itemId, true);
+		//xmlhttp.open("POST", "/main?item=" + itemId, false);
 		xmlhttp.send();
 	}
 
@@ -136,7 +138,6 @@
 			</div>
 		</header>
 
-
 		<section>
 
 			<div id="tabs">
@@ -151,9 +152,9 @@
 					<%
 						if (user != null) {
 					%>
-					<li><a href="?category=mypurchases">Purchased Items</a></li>
-					<li><a href="?category=myuploads">My-Uploads</a></li>
-					<li><a href="?category=sellerdashboard">Seller Dashboard</a></li>
+					<li><a href="?category=my_purchases">Purchased Items</a></li>
+					<li><a href="?category=my_uploads">My-Uploads</a></li>
+					<li><a href="?category=seller_dashboard">Seller Dashboard</a></li>
 					<%
 						}
 					%>
@@ -163,80 +164,94 @@
 			<div id="contentList">
 				<%
 					String cat = (String) request.getParameter("category");
-					System.out.println(cat);
-					DatastoreService datastore = DatastoreServiceFactory
-							.getDatastoreService();
-					Key key = KeyFactory.createKey("3DContents", "contentId");
-					// Run an ancestor query to ensure we see the most up-to-date
-					// view of the Greetings belonging to the selected Guestbook.
-					Query query = null;
-					if (cat == null || cat.equals("recent")) {
-						query = new Query("3DDATA", key).addSort("date",
-								Query.SortDirection.DESCENDING);
+					if (cat == null)
 						cat = "recent";
-					} else if (cat.equals("hydrocarbons")) {
-						query = new Query("3DDATA", key).addFilter("group",
-								Query.FilterOperator.EQUAL, "Hydrocarbons");
-					} else if (cat.equals("proteins")) {
-						query = new Query("3DDATA", key).addFilter("group",
-								Query.FilterOperator.EQUAL, "Protein");
-					} else if (cat.equals("organic")) {
-						query = new Query("3DDATA", key).addFilter("group",
-								Query.FilterOperator.EQUAL, "Organic");
-					} else if (cat.equals("others")) {
-						query = new Query("3DDATA", key).addFilter("group",
-								Query.FilterOperator.EQUAL, "Others");
-					} else if (cat.equals("free")) {
-						query = new Query("3DDATA", key).addFilter("type",
-								Query.FilterOperator.EQUAL, "Free");
-					} else if (cat.equals("paid")) {
-						query = new Query("3DDATA", key).addFilter("type",
-								Query.FilterOperator.EQUAL, "Paid");
-					} else if (cat.equals("myuploads")) {
-						query = new Query("3DDATA", key).addFilter("user",
-								Query.FilterOperator.EQUAL, user);
-					} else {
-						query = new Query("3DDATA", key).addSort("date",
-								Query.SortDirection.DESCENDING);
-					}
-					out.println("<h2>" + cat.toUpperCase() + "</h2>");
-					List<Entity> contentList = datastore.prepare(query).asList(
-							FetchOptions.Builder.withLimit(5));
-					if (contentList.isEmpty()) {
+					System.out.println("Category : " + cat);
+					out.println("<h2>" + cat.replace("_", " ").toUpperCase() + "</h2>");
+					cat = cat.replace("_", "");
+					//pagination
+					Object pageAtr = request.getParameter("page");
+					int pageId = pageAtr == null ? 0 : new Integer((String) pageAtr);
+					System.out.println("page : " + pageId);
+					int count = (pageId * 10 + 1);
+
+					if (cat.equals("sellerdashboard")) {
 				%>
-				<p>No content available at present. Come back after some time.</p>
+				<table style="width: 86%" border="1">
+					<thead>
+						<tr>
+							<th>Item</th>
+							<th>Buyer</th>
+							<th>Order Id</th>
+							<th>Date</th>
+							<th>Amount</th>
+						</tr>
+					</thead>
+					<%
+						List<Purchase> orders = Dao.INSTANCE.getSales(user + "");
+							long netSalesAmt = 0;
+							for (Purchase purchase : orders) {
+					%>
+					<tr>
+						<td><%=Dao.INSTANCE.getItem(purchase.getItemId())
+							.getTitle()%></td>
+						<td><%=purchase.getBuyer()%></td>
+						<td><%=purchase.getOrderId()%></td>
+						<td><%=purchase.getDateOfPurchase().toLocaleString()%></td>
+						<td><%=purchase.getAmount()%></td>
+						<%-- 				<td><%=purchase.isClaimedBySellr()%></td> --%>
+					</tr>
+					<%
+						if (!purchase.isClaimedBySellr())
+									netSalesAmt += purchase.getAmount();
+								//if (count++ > 10)
+								//	break;
+							}
+					%>
+				</table>
+				<ul>
+					<li>Total Sales Amount : <%=netSalesAmt%>
+					</li>
+
+					<li>Amount Earned : <%=netSalesAmt * 0.9%>
+					</li>
+				</ul>
+
+				<%-- <a href="?page=<%=count / 10%>">Next</a> --%>
 				<%
 					} else {
-						Object pageAtr = request.getParameter("page");
-						System.out.println(pageAtr);
-						int pageId = pageAtr == null ? 0
-								: new Integer((String) pageAtr);
-						int count = (pageId * 10 + 1);
+						List<Item> items = Dao.INSTANCE.searchItems(cat, user + "");
+
+						if (items.isEmpty()) {
+				%>
+				<p>No content available at present. Please come back after some
+					time.</p>
+				<%
+					} else {
 				%>
 				<table style="width: 100%">
 					<%
-						for (Entity entry : contentList) {
-								String keystring = KeyFactory.keyToString(entry.getKey());
+						for (Item entry : items) {
 					%>
 					<tr>
 						<td width="20%"><img
-							src="/serve?blob-key=<%=entry.getProperty("previewPic")%>" alt=""
-							border='0' height='160' width='160' /></td>
+							src="/serve?blob-key=<%=entry.getPreviewId()%>" alt="" border='0'
+							height='160' width='160' /></td>
 						<td width="60%">
-							<h3><%=entry.getProperty("title")%></h3> Uploaded on <%=entry.getProperty("date")%>
-							<br>Category : <%=entry.getProperty("group")%> , Type : <%=entry.getProperty("type")%>
-							<p><%=entry.getProperty("desc")%></p> <br> <%
- 	if ("Free".equals(entry.getProperty("type"))
- 					|| (user != null && Dao.INSTANCE.isItemPurchased(
- 							user.toString(), keystring))) {
- %> <a href="/serve?blob-key=<%=entry.getProperty("content")%>">Download</a>
-							<%
-								} else {
-							%>
+							<h3><%=entry.getTitle()%></h3> Uploaded on <%=entry.getUploadDate()%>
+							<br>Category : <%=entry.getGroup()%> , Type : <%=entry.getType()%>
+							<p><%=entry.getDesc()%></p> <br> <%
+ 	if ("Free".equals(entry.getType())
+ 						|| (user != null && Dao.INSTANCE
+ 								.isItemPurchased(user.toString(),
+ 										entry.getId()))) {
+ %> <a href="/serve?blob-key=<%=entry.getContentId()%>">Download</a> <%
+ 	} else {
+ %>
 							<button class="buy-button" type="button"
-								onClick="initiatePurchase('<%=keystring%>');">
+								onClick="initiatePurchase('<%=entry.getId()%>');">
 								Buy (Rs
-								<%=entry.getProperty("price")%>)
+								<%=entry.getPrice()%>)
 							</button> <%
  	}
  %>
@@ -244,18 +259,18 @@
 					</tr>
 					<%
 						if (count++ > 10)
-									break;
-							}
+										break;
+								}
 					%>
 				</table>
-				<%-- 				<%
+				<%-- <%
 					//if(contentList.size()>count)
 				%> --%>
 				<a href="?page=<%=count / 10%>">Next</a>
 				<%
 					}
+					}
 				%>
-				<!-- 	<h2>Categories</h2> -->
 			</div>
 		</section>
 
@@ -321,9 +336,7 @@
 		%>
 		<footer> Crowd source platform - Copyright (c) 2004, All
 			Rights Reserved. </footer>
-		<div id="ajaxOutput"></div>
 	</div>
 </body>
 </html>
-
 
