@@ -69,7 +69,7 @@ public enum Dao {
 			break;
 		case "proteins":
 			q = em.createQuery("select t from Item t where t.group = :group");
-			q.setParameter("group", "Hydrocarbons");
+			q.setParameter("group", "Proteins");
 			break;
 		case "others":
 			q = em.createQuery("select t from Item t where t.group = :group");

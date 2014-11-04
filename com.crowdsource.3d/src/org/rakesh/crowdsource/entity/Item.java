@@ -34,7 +34,7 @@ public class Item {
 		this.group = group;
 		this.type = type;
 		this.previewId = previewId;
-		this.price = price.matches("[0-9]*") ? Long.parseLong(price) : 1;
+		this.price = price.matches("[0-9]+") ? Long.parseLong(price) : 0;
 		this.uploadDate = new Date();
 	}
 

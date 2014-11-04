@@ -177,7 +177,7 @@
 
 					if (cat.equals("sellerdashboard")) {
 				%>
-				<table style="width: 86%" border="1">
+				<table style="width: 99%" border="1">
 					<thead>
 						<tr>
 							<th>Item</th>
@@ -193,12 +193,12 @@
 							for (Purchase purchase : orders) {
 					%>
 					<tr>
-						<td><%=Dao.INSTANCE.getItem(purchase.getItemId())
+						<td style=""1"><%=Dao.INSTANCE.getItem(purchase.getItemId())
 							.getTitle()%></td>
-						<td><%=purchase.getBuyer()%></td>
-						<td><%=purchase.getOrderId()%></td>
-						<td><%=purchase.getDateOfPurchase().toLocaleString()%></td>
-						<td><%=purchase.getAmount()%></td>
+						<td style=""1"><%=purchase.getBuyer()%></td>
+						<td style=""1"><%=purchase.getOrderId()%></td>
+						<td style=""1"><%=purchase.getDateOfPurchase().toLocaleString()%></td>
+						<td style=""1"><%=purchase.getAmount()%></td>
 						<%-- 				<td><%=purchase.isClaimedBySellr()%></td> --%>
 					</tr>
 					<%
@@ -215,6 +215,10 @@
 
 					<li>Amount Earned : <%=netSalesAmt * 0.9%>
 					</li>
+
+					<button class="claimSales-button" type="button"
+						onClick="alert('Payment initiated and will be credited in your account in few days. Please contact admin@crowd-source-3d.appspotmail.com for enquiries');">
+						Claim earnings</button>
 				</ul>
 
 				<%-- <a href="?page=<%=count / 10%>">Next</a> --%>
