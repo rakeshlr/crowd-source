@@ -11,5 +11,9 @@
 	<classpathentry kind="lib" path=".google_apis/google-collections-1.0.jar"/>
 	<classpathentry kind="lib" path=".google_apis/gson-2.2.2.jar"/>
 	<classpathentry kind="lib" path=".google_apis/json-simple-1.1.1.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="D:/Eclipse/appengine-java-sdk-1.9.14/lib/testing/appengine-testing.jar"/>
+	<classpathentry kind="lib" path="D:/Eclipse/appengine-java-sdk-1.9.14/lib/impl/appengine-api.jar"/>
+	<classpathentry kind="lib" path="D:/Eclipse/appengine-java-sdk-1.9.14/lib/impl/appengine-api-stubs.jar"/>
 	<classpathentry kind="output" path="war/WEB-INF/classes"/>
 </classpath>

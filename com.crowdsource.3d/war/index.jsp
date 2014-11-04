@@ -180,11 +180,12 @@
 				<table style="width: 99%" border="1">
 					<thead>
 						<tr>
-							<th>Item</th>
-							<th>Buyer</th>
 							<th>Order Id</th>
-							<th>Date</th>
+							<th>Buyer</th>
+							<th>Item</th>
+							<!-- <th>Date</th> -->
 							<th>Amount</th>
+							<th>Claim Status</th>
 						</tr>
 					</thead>
 					<%
@@ -193,13 +194,12 @@
 							for (Purchase purchase : orders) {
 					%>
 					<tr>
-						<td style=""1"><%=Dao.INSTANCE.getItem(purchase.getItemId())
-							.getTitle()%></td>
+						<td style=""1"><%=purchase.getItemId()%></td>
 						<td style=""1"><%=purchase.getBuyer()%></td>
 						<td style=""1"><%=purchase.getOrderId()%></td>
-						<td style=""1"><%=purchase.getDateOfPurchase().toLocaleString()%></td>
+				<%-- 		<td style=""1"><%=purchase.getDateOfPurchase().toLocaleString()%></td> --%>
 						<td style=""1"><%=purchase.getAmount()%></td>
-						<%-- 				<td><%=purchase.isClaimedBySellr()%></td> --%>
+						<td><%=purchase.isClaimedBySellr()?"Claimed":"Not claimed"%></td> 
 					</tr>
 					<%
 						if (!purchase.isClaimedBySellr())
