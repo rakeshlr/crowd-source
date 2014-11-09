@@ -31,14 +31,28 @@ a:hover {
 	background-color: #6699FF;
 }
 
-table, th, td {
-	border: 0px solid black;
+#contentTable {
+	border: 0px solid white;
 	border-collapse: collapse;
 }
 
-tr {
+#salesTable {
 	border: 1px solid black;
+	border-collapse: collapse;
+}
+
+#uploadDiv{
+	
+	border: 1px double grey;
+}
+
+tr {
+	border: 1px solid grey;
 	border-collapse: separate;
+}
+
+th {
+	background-color:#F0F8FF;
 }
 
 #container {
@@ -80,9 +94,10 @@ header a span:hover {
 }
 
 #topHeader h1, #bottomHeader h2 {
-	width: 500px;
+	width: 400px;
 	float: left;
-	margin: 0 0 0 20px;
+	vertical-align:middle;
+	margin: 5 0 0 0px;
 }
 
 #bottomHeader h2 {

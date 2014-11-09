@@ -1,5 +1,6 @@
 package org.rakesh.crowdsource.entity;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -84,6 +85,11 @@ public class Purchase {
 		return dateOfPurchase;
 	}
 
+	public String getDateOfPurchaseString() {
+		SimpleDateFormat ft = new SimpleDateFormat("dd.mm.yyyy HH:mm");
+		return ft.format(dateOfPurchase);
+	}
+
 	public void setDateOfPurchase(Date dateOfPurchase) {
 		this.dateOfPurchase = dateOfPurchase;
 	}
@@ -103,7 +109,5 @@ public class Purchase {
 	public void setClaimedBySellr(boolean claimedBySellr) {
 		this.claimedBySellr = claimedBySellr;
 	}
-
-
 
 }

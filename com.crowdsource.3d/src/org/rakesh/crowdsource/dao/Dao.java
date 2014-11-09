@@ -229,4 +229,12 @@ public enum Dao {
 			throw new Exception("Item id is null");
 
 	}
+
+	public String getItemName(long itemId) {
+		Item item = getItem(itemId);
+		if (item != null)
+			return item.getTitle();
+		return "Item:" + itemId;
+
+	}
 }

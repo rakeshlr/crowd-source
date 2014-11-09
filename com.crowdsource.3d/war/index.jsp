@@ -113,7 +113,13 @@
 	<div id="container">
 		<header>
 			<div id="topHeader">
-				<h1>3D content repository</h1>
+
+				<p>
+				<h1>
+					<img src="images/logo.jpg" alt="3D-Crowdsource" width="70"
+						height="40" />3D Content Repository
+				</h1>
+				</p>
 				<!-- 				<p>3D ContentRepository is an online community of
 					users/developers who share and download user contributed 3D content
 					of various categories.</p> -->
@@ -176,30 +182,38 @@
 					int count = (pageId * 10 + 1);
 
 					if (cat.equals("sellerdashboard")) {
+						List<Purchase> orders = Dao.INSTANCE.getSales(user + "");
 				%>
-				<table style="width: 99%" border="1">
-					<thead>
+				<table id="salesTable" style="width: 99%" border="1">
+
+					<%
+						if (!orders.isEmpty()) {
+					%>
+					<thead style="border: 1px solid black;">
 						<tr>
-							<th>Order Id</th>
-							<th>Buyer</th>
 							<th>Item</th>
+							<th>Buyer</th>
+							<th>Order Id</th>
 							<!-- <th>Date</th> -->
-							<th>Amount</th>
+							<th>Amount (Rs)</th>
 							<th>Claim Status</th>
 						</tr>
 					</thead>
 					<%
-						List<Purchase> orders = Dao.INSTANCE.getSales(user + "");
-							long netSalesAmt = 0;
+						}
+					%>
+					<%
+						long netSalesAmt = 0;
 							for (Purchase purchase : orders) {
 					%>
 					<tr>
-						<td style=""1"><%=purchase.getItemId()%></td>
-						<td style=""1"><%=purchase.getBuyer()%></td>
-						<td style=""1"><%=purchase.getOrderId()%></td>
-				<%-- 		<td style=""1"><%=purchase.getDateOfPurchase().toLocaleString()%></td> --%>
-						<td style=""1"><%=purchase.getAmount()%></td>
-						<td><%=purchase.isClaimedBySellr()?"Claimed":"Not claimed"%></td> 
+						<td><%=Dao.INSTANCE.getItemName(purchase.getItemId())%></td>
+						<td><%=purchase.getBuyer()%></td>
+						<td><%=purchase.getOrderId()%></td>
+						<%-- 		<td style=""1"><%=purchase.getDateOfPurchase().toLocaleString()%></td> --%>
+						<td><%=purchase.getAmount()%></td>
+						<td><%=purchase.isClaimedBySellr() ? "Claimed"
+							: "Not claimed"%></td>
 					</tr>
 					<%
 						if (!purchase.isClaimedBySellr())
@@ -209,6 +223,7 @@
 							}
 					%>
 				</table>
+
 				<ul>
 					<li>Total Sales Amount : <%=netSalesAmt%>
 					</li>
@@ -233,7 +248,7 @@
 				<%
 					} else {
 				%>
-				<table style="width: 100%">
+				<table id="contentTable" style="width: 100%">
 					<%
 						for (Item entry : items) {
 					%>
@@ -242,9 +257,12 @@
 							src="/serve?blob-key=<%=entry.getPreviewId()%>" alt="" border='0'
 							height='160' width='160' /></td>
 						<td width="60%">
-							<h3><%=entry.getTitle()%></h3> Uploaded on <%=entry.getUploadDate()%>
-							<br>Category : <%=entry.getGroup()%> , Type : <%=entry.getType()%>
-							<p><%=entry.getDesc()%></p> <br> <%
+							<h3><%=entry.getTitle()%></h3> Uploaded by : <%=entry.getUser()%>
+							<br>Upload date : <%=entry.getUploadDateString()%> <br>Category : <%=entry.getGroup()%>
+							<br>Type : <%=entry.getType()%>
+							<p>
+								Description : 
+								<%=entry.getDesc()%></p> <br> <%
  	if ("Free".equals(entry.getType())
  						|| (user != null && Dao.INSTANCE
  								.isItemPurchased(user.toString(),
@@ -277,68 +295,70 @@
 				%>
 			</div>
 		</section>
+		<br>
 
 		<%
 			if (user != null) {
 		%>
-		<br>
-		<h2>
-			<i><b> You can upload your 3D content here! </b></i>
-		</h2>
-		<form action="<%=blobstoreService.createUploadUrl("/upload")%>"
-			method="post" enctype="multipart/form-data">
-			<table>
-				<tbody>
-					<tr>
-						<td>3D content file</td>
-						<td><input type="file" name="content" required="true"></td>
-					</tr>
-					<tr>
-						<td>Title</td>
-						<td><input type="text" name="title" required="true"></td>
-					<tr>
-						<td>Basic Description</td>
-						<td><TEXTAREA NAME="desc" ROWS="4"></TEXTAREA></td>
-					</tr>
-					<tr>
-						<td>Group</td>
-						<td><select name="group" size="1" id="type">
-								<option>Hydrocarbons</option>
-								<option>Organic</option>
-								<option>Protein</option>
-								<option>Others</option>
-						</select></td>
-					</tr>
-					<tr>
-						<td>Content Type</td>
-						<td><select id="typeCombo" name="type" size="1" id="type"
-							onchange="checkContentType();">
-								<option>Free</option>
-								<option>Paid</option>
-						</select></td>
-					</tr>
-					<tr>
-						<td>Price</td>
-						<td><input type="number" id="pricefield" name="price"
-							disabled="true"></td>
-					</tr>
-					<tr>
-						<td>Preview Image</td>
-						<td><input type="file" name="previewPic" accept="image/*"
-							required="true"></td>
-					</tr>
-					<tr>
-						<td></td>
-						<td><input type="submit" value="Upload" /></td>
-					</tr>
-				</tbody>
-			</table>
-			<br>
-		</form>
+		<div id="uploadDiv">
+			<h2>
+				<u><b> You can upload your 3D content here! </b></u>
+			</h2>
+			<form action="<%=blobstoreService.createUploadUrl("/upload")%>"
+				method="post" enctype="multipart/form-data">
+				<table>
+					<tbody>
+						<tr>
+							<td>3D content file</td>
+							<td><input type="file" name="content" required="true"></td>
+						</tr>
+						<tr>
+							<td>Title</td>
+							<td><input type="text" name="title" required="true"></td>
+						<tr>
+							<td>Basic Description</td>
+							<td><TEXTAREA NAME="desc" ROWS="4"></TEXTAREA></td>
+						</tr>
+						<tr>
+							<td>Group</td>
+							<td><select name="group" size="1" id="type">
+									<option>Hydrocarbons</option>
+									<option>Organic</option>
+									<option>Protein</option>
+									<option>Others</option>
+							</select></td>
+						</tr>
+						<tr>
+							<td>Content Type</td>
+							<td><select id="typeCombo" name="type" size="1" id="type"
+								onchange="checkContentType();">
+									<option>Free</option>
+									<option>Paid</option>
+							</select></td>
+						</tr>
+						<tr>
+							<td>Price</td>
+							<td><input type="number" id="pricefield" name="price"
+								disabled="true"></td>
+						</tr>
+						<tr>
+							<td>Preview Image</td>
+							<td><input type="file" name="previewPic" accept="image/*"
+								required="true"></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><input type="submit" value="Upload" /></td>
+						</tr>
+					</tbody>
+				</table>
+				<br>
+			</form>
+		</div>
 		<%
 			}
 		%>
-		<footer> Crowd source platform - Copyright (c) 2004, All
+		<footer> Crowd source platform - Copyright (c) 2014, All
 			Rights Reserved. </footer>
 	</div>
 </body>

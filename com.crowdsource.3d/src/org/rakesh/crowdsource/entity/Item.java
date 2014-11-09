@@ -1,5 +1,6 @@
 package org.rakesh.crowdsource.entity;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import javax.persistence.Entity;
@@ -70,6 +71,11 @@ public class Item {
 
 	public Date getUploadDate() {
 		return uploadDate;
+	}
+	
+	public String getUploadDateString() {
+		SimpleDateFormat ft = new SimpleDateFormat("dd.mm.yyyy HH:mm");
+		return ft.format(uploadDate);
 	}
 
 	public void setUploadDate(Date uploadDate) {
